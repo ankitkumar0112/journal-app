@@ -30,7 +30,7 @@ public class JournalAppController {
 
     @PostMapping
     public boolean addJournal(@RequestBody JournalDataModel journalDataModel) {
-        return service.addData(journalDataModel);
+        return service.addJournal(journalDataModel);
     }
 
     @PutMapping("{id}")

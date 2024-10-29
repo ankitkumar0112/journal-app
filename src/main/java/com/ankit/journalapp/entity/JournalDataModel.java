@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity(name = "journal")
@@ -16,4 +18,5 @@ public class JournalDataModel {
     private Long id;
     private String title;
     private String content;
+    private LocalDateTime dateTime;
 }

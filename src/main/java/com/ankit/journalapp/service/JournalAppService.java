@@ -5,6 +5,7 @@ import com.ankit.journalapp.repository.JournalAppRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,8 +18,9 @@ public class JournalAppService {
         this.journalAppRepository = journalAppRepository;
     }
 
-    public boolean addData(JournalDataModel journalDataModel) {
+    public boolean addJournal(JournalDataModel journalDataModel) {
         try {
+            journalDataModel.setDateTime(LocalDateTime.now());
             journalAppRepository.saveAndFlush(journalDataModel);
             return true;
         } catch (Exception e) {
@@ -30,6 +32,7 @@ public class JournalAppService {
         JournalDataModel model = journalAppRepository.findById(String.valueOf(id)).orElseThrow(RuntimeException::new);
         model.setContent(journalDataModel.getContent());
         model.setTitle(journalDataModel.getTitle());
+        model.setDateTime(LocalDateTime.now());
         try {
             journalAppRepository.saveAndFlush(model);
             return true;
