@@ -18,6 +18,14 @@ public class JournalAppService {
         this.journalAppRepository = journalAppRepository;
     }
 
+    public List<JournalDataModel> getAllJournals() {
+        return journalAppRepository.findAll();
+    }
+
+    public JournalDataModel getJournalById(Long id) {
+        return journalAppRepository.findById(String.valueOf(id)).orElse(null);
+    }
+
     public boolean addJournal(JournalDataModel journalDataModel) {
         try {
             journalDataModel.setDateTime(LocalDateTime.now());
@@ -29,24 +37,19 @@ public class JournalAppService {
     }
 
     public boolean updateJournal(Long id, JournalDataModel journalDataModel) {
-        JournalDataModel model = journalAppRepository.findById(String.valueOf(id)).orElseThrow(RuntimeException::new);
-        model.setContent(journalDataModel.getContent());
-        model.setTitle(journalDataModel.getTitle());
-        model.setDateTime(LocalDateTime.now());
-        try {
-            journalAppRepository.saveAndFlush(model);
-            return true;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        JournalDataModel model = journalAppRepository.findById(String.valueOf(id)).orElse(null);
+        if (model != null) {
+            model.setContent(journalDataModel.getContent());
+            model.setTitle(journalDataModel.getTitle());
+            model.setDateTime(LocalDateTime.now());
+            try {
+                journalAppRepository.saveAndFlush(model);
+                return true;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-    }
-
-    public List<JournalDataModel> getAllJournals() {
-        return journalAppRepository.findAll();
-    }
-
-    public JournalDataModel getJournalById(Long id) {
-        return journalAppRepository.findById(String.valueOf(id)).orElseThrow(RuntimeException::new);
+        return false;
     }
 
     public void deleteJournal(Long id) {
