@@ -2,6 +2,7 @@ package com.ankit.journalapp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class JournalDataModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name = "title", nullable = false)
+    @NonNull
     private String title;
     private String content;
     private LocalDateTime dateTime;
