@@ -29,11 +29,12 @@ public class UserService {
         userRepository.save(userDataModel);
     }
 
-    public void updateUser(UserDataModel userDataModel) {
-        UserDataModel model = userRepository.findByUserName(userDataModel.getUserName());
+    public void updateUser(String userName, UserDataModel userDataModel) {
+        UserDataModel model = userRepository.findByUserName(userName);
         if (model != null) {
             model.setUserName(userDataModel.getUserName());
             model.setPassword(userDataModel.getPassword());
+            model.setJournalDataModels(userDataModel.getJournalDataModels());
             userRepository.save(model);
         }
     }
