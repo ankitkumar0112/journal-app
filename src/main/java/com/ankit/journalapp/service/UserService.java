@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -23,7 +24,8 @@ public class UserService {
     }
 
     public UserDataModel findByUserName(String userName) {
-        return userRepository.findByUserName(userName);
+        return Optional.ofNullable(userRepository.findByUserName(userName))
+                .orElseThrow(() -> new DataNotFoundException("User " + userName + " not found"));
     }
 
     public void createUser(UserDataModel userDataModel) {
@@ -31,13 +33,10 @@ public class UserService {
     }
 
     public void updateUser(UserDataModel userDataModel, String userName) {
-        UserDataModel model = userRepository.findByUserName(userName);
-        if (model != null) {
-            model.setUserName(userDataModel.getUserName());
-            model.setPassword(userDataModel.getPassword());
-            model.setJournalDataModels(userDataModel.getJournalDataModels());
-            userRepository.save(model);
-        } else
-            throw new DataNotFoundException(String.format("User %s not found", userName));
+        UserDataModel model = findByUserName(userName);
+        model.setUserName(userDataModel.getUserName());
+        model.setPassword(userDataModel.getPassword());
+        model.setJournalDataModels(userDataModel.getJournalDataModels());
+        userRepository.save(model);
     }
 }

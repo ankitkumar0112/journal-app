@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JournalAppService {
 
-    JournalAppRepository journalAppRepository;
-    UserService userService;
+    private final JournalAppRepository journalAppRepository;
+    private final UserService userService;
 
     @Autowired
     public JournalAppService(JournalAppRepository journalAppRepository, UserService userService) {
@@ -27,40 +28,52 @@ public class JournalAppService {
     }
 
     public JournalDataModel getJournalById(Long id) {
-        return journalAppRepository.findById(String.valueOf(id)).orElse(null);
+        return journalAppRepository.findById(String.valueOf(id)).orElseThrow(() ->
+                new DataNotFoundException("Journal not found with id: " + id));
     }
 
     public boolean addJournal(JournalDataModel journalDataModel, String userName) {
-        UserDataModel userDataModel = userService.findByUserName(userName);
-        if (userDataModel != null) {
-            journalDataModel.setDateTime(LocalDateTime.now());
-            journalAppRepository.saveAndFlush(journalDataModel);
+        UserDataModel userDataModel = getUserByUserName(userName);
 
-            userDataModel.getJournalDataModels().add(journalDataModel);
-            userService.updateUser(userDataModel, userName);
+        journalDataModel.setDateTime(LocalDateTime.now());
+        journalAppRepository.saveAndFlush(journalDataModel);
+
+        userDataModel.getJournalDataModels().add(journalDataModel);
+        userService.updateUser(userDataModel, userName);
+
+        return true;
+    }
+
+    public boolean updateJournal(String name, JournalDataModel journalDataModel) {
+        UserDataModel userDataModel = getUserByUserName(name);
+
+        Optional<JournalDataModel> optionalJournal = userDataModel.getJournalDataModels().stream().findFirst();
+        if (optionalJournal.isPresent()) {
+            JournalDataModel existingJournal = optionalJournal.get();
+            existingJournal.setContent(journalDataModel.getContent());
+            existingJournal.setTitle(journalDataModel.getTitle());
+            existingJournal.setDateTime(LocalDateTime.now());
+            journalAppRepository.saveAndFlush(existingJournal);
             return true;
         } else {
-            throw new DataNotFoundException(String.format("User %s not found", userName));
+            throw new DataNotFoundException("No journal found for user: " + name);
         }
     }
 
-    public boolean updateJournal(Long id, JournalDataModel journalDataModel) {
-        JournalDataModel model = journalAppRepository.findById(String.valueOf(id)).orElse(null);
-        if (model != null) {
-            model.setContent(journalDataModel.getContent());
-            model.setTitle(journalDataModel.getTitle());
-            model.setDateTime(LocalDateTime.now());
-            try {
-                journalAppRepository.saveAndFlush(model);
-                return true;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    public void deleteJournal(String name) {
+        UserDataModel userDataModel = getUserByUserName(name);
+
+        Optional<JournalDataModel> optionalJournal = userDataModel.getJournalDataModels().stream().findFirst();
+        if (optionalJournal.isPresent()) {
+            Long journalId = optionalJournal.get().getId();
+            journalAppRepository.deleteById(String.valueOf(journalId));
+        } else {
+            throw new DataNotFoundException("No journal found to delete for user: " + name);
         }
-        return false;
     }
 
-    public void deleteJournal(Long id) {
-        journalAppRepository.deleteById(String.valueOf(id));
+    private UserDataModel getUserByUserName(String name) {
+        return Optional.ofNullable(userService.findByUserName(name))
+                .orElseThrow(() -> new DataNotFoundException("User " + name + " not found"));
     }
 }
