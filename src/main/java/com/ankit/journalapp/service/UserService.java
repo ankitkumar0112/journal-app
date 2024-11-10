@@ -1,6 +1,7 @@
 package com.ankit.journalapp.service;
 
 import com.ankit.journalapp.entity.UserDataModel;
+import com.ankit.journalapp.exception.DataNotFoundException;
 import com.ankit.journalapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,14 @@ public class UserService {
         userRepository.save(userDataModel);
     }
 
-    public void updateUser(String userName, UserDataModel userDataModel) {
+    public void updateUser(UserDataModel userDataModel, String userName) {
         UserDataModel model = userRepository.findByUserName(userName);
         if (model != null) {
             model.setUserName(userDataModel.getUserName());
             model.setPassword(userDataModel.getPassword());
             model.setJournalDataModels(userDataModel.getJournalDataModels());
             userRepository.save(model);
-        }
+        } else
+            throw new DataNotFoundException(String.format("User %s not found", userName));
     }
 }

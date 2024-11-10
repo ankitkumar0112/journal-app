@@ -46,7 +46,7 @@ public class UserController {
 
     @PutMapping("{userName}")
     public ResponseEntity<Boolean> updateUser(@RequestBody UserDataModel userDataModel, @PathVariable("userName") String userName) {
-        service.updateUser(userName, userDataModel);
+        service.updateUser(userDataModel, userName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
