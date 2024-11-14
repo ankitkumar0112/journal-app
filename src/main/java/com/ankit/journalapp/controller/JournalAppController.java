@@ -6,7 +6,6 @@ import com.ankit.journalapp.exception.DataNotFoundException;
 import com.ankit.journalapp.service.JournalAppService;
 import com.ankit.journalapp.service.UserService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ public class JournalAppController {
     private final JournalAppService journalAppService;
     private final UserService userService;
 
-    @Autowired
     public JournalAppController(JournalAppService journalAppService, UserService userService) {
         this.journalAppService = journalAppService;
         this.userService = userService;
@@ -43,7 +41,8 @@ public class JournalAppController {
     }
 
     @PostMapping("{userName}")
-    public ResponseEntity<Void> createJournalEntryForAUser(@RequestBody JournalDataModel journalDataModel, @PathVariable String userName) {
+    public ResponseEntity<Void> createJournalEntryForAUser(@RequestBody JournalDataModel journalDataModel,
+            @PathVariable String userName) {
         boolean isJournalAdded = journalAppService.addJournal(journalDataModel, userName);
         return isJournalAdded
                 ? ResponseEntity.status(HttpStatus.CREATED).build()
@@ -51,7 +50,8 @@ public class JournalAppController {
     }
 
     @PutMapping("{name}")
-    public ResponseEntity<Void> updateJournalForAUser(@RequestBody JournalDataModel journalDataModel, @PathVariable("name") String name) {
+    public ResponseEntity<Void> updateJournalForAUser(@RequestBody JournalDataModel journalDataModel,
+            @PathVariable("name") String name) {
         boolean isJournalUpdated = journalAppService.updateJournal(name, journalDataModel);
         return isJournalUpdated
                 ? ResponseEntity.ok().build()
