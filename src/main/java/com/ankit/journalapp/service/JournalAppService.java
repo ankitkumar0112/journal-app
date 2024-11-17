@@ -5,6 +5,7 @@ import com.ankit.journalapp.entity.UserDataModel;
 import com.ankit.journalapp.exception.DataNotFoundException;
 import com.ankit.journalapp.repository.JournalAppRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,14 +33,15 @@ public class JournalAppService {
                 new DataNotFoundException("Journal not found with id: " + id));
     }
 
-    public boolean addJournal(JournalDataModel journalDataModel, String userName) {
+    public boolean addJournal(JournalDataModel journalDataModel) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDataModel userDataModel = getUserByUserName(userName);
 
         journalDataModel.setDateTime(LocalDateTime.now());
         journalAppRepository.saveAndFlush(journalDataModel);
 
         userDataModel.getJournalDataModels().add(journalDataModel);
-        userService.updateUser(userDataModel, userName);
+        userService.updateUser(userDataModel);
 
         return true;
     }

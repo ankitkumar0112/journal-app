@@ -36,10 +36,4 @@ public class UserController {
         service.createUser(userDataModel);
         return ResponseEntity.status(201).build();
     }
-
-    @PutMapping("{userName}")
-    public ResponseEntity<Void> updateUser(@RequestBody UserDataModel userDataModel, @PathVariable String userName) {
-        service.updateUser(userDataModel, userName);
-        return ResponseEntity.ok().build();
-    }
 }

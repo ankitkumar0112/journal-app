@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -28,4 +26,6 @@ public class UserDataModel {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Set<JournalDataModel> journalDataModels = new HashSet<>();
+
+    private List<String> roles = new ArrayList<>();
 }

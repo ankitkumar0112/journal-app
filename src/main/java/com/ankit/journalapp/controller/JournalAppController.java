@@ -40,10 +40,9 @@ public class JournalAppController {
                 : ResponseEntity.ok(journals);
     }
 
-    @PostMapping("{userName}")
-    public ResponseEntity<Void> createJournalEntryForAUser(@RequestBody JournalDataModel journalDataModel,
-            @PathVariable String userName) {
-        boolean isJournalAdded = journalAppService.addJournal(journalDataModel, userName);
+    @PostMapping
+    public ResponseEntity<Void> createJournalEntryForAUser(@RequestBody JournalDataModel journalDataModel) {
+        boolean isJournalAdded = journalAppService.addJournal(journalDataModel);
         return isJournalAdded
                 ? ResponseEntity.status(HttpStatus.CREATED).build()
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -51,7 +50,7 @@ public class JournalAppController {
 
     @PutMapping("{name}")
     public ResponseEntity<Void> updateJournalForAUser(@RequestBody JournalDataModel journalDataModel,
-            @PathVariable("name") String name) {
+                                                      @PathVariable("name") String name) {
         boolean isJournalUpdated = journalAppService.updateJournal(name, journalDataModel);
         return isJournalUpdated
                 ? ResponseEntity.ok().build()
