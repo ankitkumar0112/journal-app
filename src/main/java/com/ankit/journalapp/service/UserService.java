@@ -45,4 +45,8 @@ public class UserService {
         model.setJournalDataModels(userDataModel.getJournalDataModels());
         userRepository.save(model);
     }
+
+    public void deleteByUserName(String userName) {
+        userRepository.deleteByUserName(userName);
+    }
 }
