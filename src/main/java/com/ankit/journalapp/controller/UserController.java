@@ -1,6 +1,7 @@
 package com.ankit.journalapp.controller;
 
 import com.ankit.journalapp.entity.UserDataModel;
+import com.ankit.journalapp.model.UserDomainModel;
 import com.ankit.journalapp.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDataModel>> getAllUsers() {
-        List<UserDataModel> users = service.getAllUsers();
+    public ResponseEntity<List<UserDomainModel>> getAllUsers() {
+        List<UserDomainModel> users = service.getAllUsers();
         return users.isEmpty()
                 ? ResponseEntity.notFound().build()
                 : ResponseEntity.ok(users);

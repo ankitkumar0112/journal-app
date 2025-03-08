@@ -2,9 +2,9 @@ package com.ankit.journalapp.controller;
 
 import com.ankit.journalapp.entity.JournalDataModel;
 import com.ankit.journalapp.entity.UserDataModel;
-import com.ankit.journalapp.exception.DataNotFoundException;
 import com.ankit.journalapp.service.JournalAppService;
 import com.ankit.journalapp.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/journal")
+@Slf4j
 public class JournalAppController {
 
     private final JournalAppService journalAppService;
@@ -29,15 +30,27 @@ public class JournalAppController {
     @GetMapping("{userName}")
     public ResponseEntity<List<JournalDataModel>> getAllJournalEntriesOfAUser(@PathVariable String userName) {
         String name = StringUtils.trim(userName);
+        log.info("Received request to get journal entries for user: {}", name);
+
         UserDataModel userDataModel = findUserByUserName(name);
+
+        if (userDataModel == null) {
+            log.warn("User not found: {}", name);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         List<JournalDataModel> journals = Optional.ofNullable(userDataModel.getJournalDataModels())
                 .orElse(Collections.emptySet())
                 .stream()
                 .toList();
 
-        return journals.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-                : ResponseEntity.ok(journals);
+        if (journals.isEmpty()) {
+            log.error("No journal entries found for user: {}", name);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            log.info("Found {} journal entries for user: {}", journals.size(), name);
+            return ResponseEntity.ok(journals);
+        }
     }
 
     @PostMapping
@@ -64,7 +77,6 @@ public class JournalAppController {
     }
 
     private UserDataModel findUserByUserName(String name) {
-        return Optional.ofNullable(userService.findByUserName(name))
-                .orElseThrow(() -> new DataNotFoundException(String.format("User %s not found", name)));
+        return userService.findByUserName(name);
     }
 }

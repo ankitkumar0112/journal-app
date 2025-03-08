@@ -23,7 +23,7 @@ public class UserDataModel {
     @NonNull
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "users_id")
     private Set<JournalDataModel> journalDataModels = new HashSet<>();
 
