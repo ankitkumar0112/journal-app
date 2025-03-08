@@ -43,7 +43,7 @@ public class UserService {
     public UserDataModel findByUserName(String userName) {
         return Optional.ofNullable(userRepository.findByUserName(userName))
                 .orElseThrow(() -> {
-                    log.info("User {} not found", userName);
+                    log.error("User {} not found", userName);
                     return new DataNotFoundException(String.format("User %s not found", userName));
                 });
     }

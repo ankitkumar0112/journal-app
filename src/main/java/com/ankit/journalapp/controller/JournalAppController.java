@@ -35,7 +35,7 @@ public class JournalAppController {
         UserDataModel userDataModel = findUserByUserName(name);
 
         if (userDataModel == null) {
-            log.warn("User not found: {}", name);
+            log.error("User not found: {}", name);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
