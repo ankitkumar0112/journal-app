@@ -3,7 +3,8 @@ package com.ankit.journalapp.controller;
 import com.ankit.journalapp.entity.UserDataModel;
 import com.ankit.journalapp.exception.DataNotFoundException;
 import com.ankit.journalapp.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +14,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
-@Slf4j
 public class AdminController {
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
     private static final String MESSAGE = "message";
     private final UserService service;
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class JournalAppService {
@@ -41,7 +42,7 @@ public class JournalAppService {
         journalAppRepository.saveAndFlush(journalDataModel);
 
         userDataModel.getJournalDataModels().add(journalDataModel);
-        userService.updateUser(userDataModel);
+        userService.assignJournalToAUser(userDataModel);
 
         return true;
     }
@@ -67,7 +68,7 @@ public class JournalAppService {
 
         Optional<JournalDataModel> optionalJournal = userDataModel.getJournalDataModels().stream().findFirst();
         if (optionalJournal.isPresent()) {
-            Long journalId = optionalJournal.get().getId();
+            UUID journalId = optionalJournal.get().getId();
             journalAppRepository.deleteById(String.valueOf(journalId));
         } else {
             throw new DataNotFoundException("No journal found to delete for user: " + name);

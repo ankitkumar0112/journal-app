@@ -4,10 +4,11 @@ import com.ankit.journalapp.entity.JournalDataModel;
 import com.ankit.journalapp.entity.UserDataModel;
 import com.ankit.journalapp.service.JournalAppService;
 import com.ankit.journalapp.service.UserService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -16,9 +17,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/journal")
-@Slf4j
 public class JournalAppController {
-
+    private static final Logger log = LoggerFactory.getLogger(JournalAppController.class);
     private final JournalAppService journalAppService;
     private final UserService userService;
 
@@ -27,18 +27,11 @@ public class JournalAppController {
         this.userService = userService;
     }
 
-    @GetMapping("{userName}")
-    public ResponseEntity<List<JournalDataModel>> getAllJournalEntriesOfAUser(@PathVariable String userName) {
-        String name = StringUtils.trim(userName);
+    @GetMapping
+    public ResponseEntity<List<JournalDataModel>> getAllJournalEntriesOfAUser() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Received request to get journal entries for user: {}", name);
-
         UserDataModel userDataModel = findUserByUserName(name);
-
-        if (userDataModel == null) {
-            log.error("User not found: {}", name);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
         List<JournalDataModel> journals = Optional.ofNullable(userDataModel.getJournalDataModels())
                 .orElse(Collections.emptySet())
                 .stream()

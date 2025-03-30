@@ -1,10 +1,12 @@
 package com.ankit.journalapp.service;
 
 import com.ankit.journalapp.entity.UserDataModel;
+import com.ankit.journalapp.exception.AlreadyExistsException;
 import com.ankit.journalapp.exception.DataNotFoundException;
 import com.ankit.journalapp.model.UserDomainModel;
 import com.ankit.journalapp.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,9 +17,9 @@ import java.util.Optional;
 
 
 @Service
-@Slf4j
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
 
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -31,12 +33,9 @@ public class UserService {
         List<UserDataModel> users = userRepository.findAll();
         return users.stream()
                 .map(userDataModel ->
-                        UserDomainModel.builder()
-                                .id(userDataModel.getId())
-                                .userName(userDataModel.getUserName())
-                                .roles(userDataModel.getRoles())
-                                .journalDataModels(userDataModel.getJournalDataModels())
-                                .build())
+                        new UserDomainModel(userDataModel.getId(),
+                                userDataModel.getUserName(),
+                                userDataModel.getRoles()))
                 .toList();
     }
 
@@ -50,17 +49,20 @@ public class UserService {
 
     public void createUser(UserDataModel userDataModel) {
         if (userRepository.findByUserName(userDataModel.getUserName()) != null) {
-            throw new DataNotFoundException("User: " + userDataModel.getUserName() + " already exists");
+            throw new AlreadyExistsException("User: " + userDataModel.getUserName() + " already exists");
         }
         userDataModel.setPassword(passwordEncoder.encode(userDataModel.getPassword()));
         userRepository.save(userDataModel);
+    }
+
+    public void assignJournalToAUser(UserDataModel userDataModel) {
+        userRepository.saveAndFlush(userDataModel);
     }
 
     public void updateUser(UserDataModel userDataModel) {
         UserDataModel model = findByUserName(SecurityContextHolder.getContext().getAuthentication().getName());
         model.setUserName(userDataModel.getUserName());
         model.setPassword(passwordEncoder.encode(userDataModel.getPassword()));
-        model.setJournalDataModels(userDataModel.getJournalDataModels());
         userRepository.save(model);
     }
 
