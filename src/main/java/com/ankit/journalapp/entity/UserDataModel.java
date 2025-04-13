@@ -1,15 +1,19 @@
 package com.ankit.journalapp.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "users", indexes = @Index(columnList = "user_name", unique = true, name = "user_name_index"))
 public class UserDataModel {
 
@@ -29,3 +33,5 @@ public class UserDataModel {
     private List<String> roles = new ArrayList<>();
 
 }
+
+
