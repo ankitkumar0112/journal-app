@@ -4,8 +4,7 @@ import com.ankit.journalapp.entity.JournalDataModel;
 import com.ankit.journalapp.entity.UserDataModel;
 import com.ankit.journalapp.service.JournalAppService;
 import com.ankit.journalapp.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +16,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/journal")
+@Slf4j
 public class JournalAppController {
-    private static final Logger log = LoggerFactory.getLogger(JournalAppController.class);
     private final JournalAppService journalAppService;
     private final UserService userService;
 

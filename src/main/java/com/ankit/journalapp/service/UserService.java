@@ -33,9 +33,12 @@ public class UserService {
         List<UserDataModel> users = userRepository.findAll();
         return users.stream()
                 .map(userDataModel ->
-                        new UserDomainModel(userDataModel.getId(),
-                                userDataModel.getUserName(),
-                                userDataModel.getRoles()))
+                        UserDomainModel.builder()
+                                .id(userDataModel.getId())
+                                .userName(userDataModel.getUserName())
+                                .roles(userDataModel.getRoles())
+                                .journalDataModels(userDataModel.getJournalDataModels())
+                                .build())
                 .toList();
     }
 
